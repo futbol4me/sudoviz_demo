@@ -9,6 +9,11 @@ import cv2
 import random
 import tensorflow as tf
 
+path = "/content/sudoviz_demo/"
+spath = path + "sudoku_board_images/"
+tpath = path + "training_data/"
+mpath = path + "models/"
+
 def load_grayscale(path):
     img = cv2.imread(path,cv2.IMREAD_GRAYSCALE)
     assert img is not None, "file could not be read, check with os.path.exists()"
@@ -220,7 +225,7 @@ def build_data_set(tdict:dict, db:list = [], jitter=False, mypath=False) -> list
     db=db.copy()
     for file in tdict:
         label_list = tdict[file]
-        filepath = fpath if mypath else tpath
+        filepath = spath if mypath else tpath
         gray = locate_sudoku_image_from(tpath+file)
         # invert, high contrast, cleargridlines
         cgray = clear_gridlines(contrast(gray))
