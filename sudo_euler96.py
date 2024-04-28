@@ -2,12 +2,11 @@
 # https://projecteuler.net/problem=96
 
 import itertools
+import numpy as np
 
 class Board():
     ''' defines a Sudoku board (basically an 81-len np.array of digits, with 0 representing empty)
     '''
-    import numpy as np
-    import itertools
 
     DIGITS = {1,2,3,4,5,6,7,8,9}
 
