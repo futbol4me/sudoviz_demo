@@ -403,7 +403,7 @@ def solve_sudoku_image(imgfile, model=None, history=False, randomize=False):
     for i in range(9):
         for j in range(9):
             if diff[i,j]:
-                gray = replace_square(gray,i,j,diff[i,j],digit_images)
+                gray = replace_square(gray,i,j,diff[i,j],DIGIT_IMAGES)
 
     dim = og.shape[0]
     bar = 255-np.zeros((dim,dim//20))
