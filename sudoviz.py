@@ -31,10 +31,14 @@ def locate_sudoku_image_from(path, inner=True):
     ## https://docs.opencv.org/4.x/d7/d4d/tutorial_py_thresholding.html
     imc = cv2.imread(path)
     img = load_grayscale(path)
-    imgb = cv2.GaussianBlur(cv2.cvtColor(imc, cv2.COLOR_BGR2GRAY) , (7, 7), 3)
+    imgb = cv2.GaussianBlur(img , (7, 7), 3)
     thresh = cv2.bitwise_not(
-                cv2.adaptiveThreshold(cv2.GaussianBlur(imgb, (7, 7), 3),
-                                      255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,11,2)
+                cv2.adaptiveThreshold(imgb,
+                                      255,
+                                      cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
+                                      cv2.THRESH_BINARY,
+                                      11,
+                                      2)
     )
 
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
