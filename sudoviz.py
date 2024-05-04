@@ -131,8 +131,9 @@ def get_square(img,r,c,shrink=None,jitter=False):
     if not jitter:
         jr, jc = 0,0
     else:
-        jr = random.randint(-pad//2,pad//2)
-        jc = random.randint(-pad//2,pad//2)
+        padrange = int(pad /2.5)
+        jr = random.randint(-padrange,padrange)
+        jc = random.randint(-padrange,padrange)
     padr = pad + jr
     padc = pad + jc
     crop = sq[padr:dim-padr,padc:dim-padc]
