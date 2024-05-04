@@ -343,7 +343,7 @@ def build_data_set(tdict:dict, db:list = [], jitter=False, mypath=False) -> list
         cgray = clear_gridlines(contrast(gray))
         for r in range(9):
             for c in range(9):
-                for i in range(19*jitter+1): #repeat 20x if jitter
+                for i in range(29*jitter+1): #repeat 30x if jitter
                     label = int(label_list[r][c])
                     s = cv2.resize(get_square(cgray,r,c,shrink=.2,jitter=jitter),(28,28),interpolation = cv2.INTER_CUBIC)
                     db.append((s,label))
