@@ -92,7 +92,7 @@ class Board():
         ''' assigns cell (r,c) tuple to item
         '''
         i,j = cell
-        assert(self.board[i*9+j]==0)
+        #assert(self.board[i*9+j]==0)
         self.board[i*9+j]=digit
 
     def copy(self):

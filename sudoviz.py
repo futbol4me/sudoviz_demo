@@ -5,7 +5,7 @@
 from sudo_euler96 import Solver, Board
 import numpy as np
 import matplotlib.pyplot as plt
-import cv2
+import cv2 as cv
 import random
 import tensorflow as tf
 
@@ -15,7 +15,7 @@ tpath = path + "training_data/"
 mpath = path + "models/"
 
 def load_grayscale(path):
-    img = cv2.imread(path,cv2.IMREAD_GRAYSCALE)
+    img = cv.imread(path,cv.IMREAD_GRAYSCALE)
     assert img is not None, "file could not be read, check with os.path.exists()"
     return img
 
@@ -26,31 +26,31 @@ def show(grayimg, show_axis=False):
     plt.show()
 
 def locate_sudoku_image_from(path, inner=True):
-    ## use cv2 contours
+    ## use cv contours
     ## https://docs.opencv.org/4.x/d4/d73/tutorial_py_contours_begin.html
     ## https://docs.opencv.org/4.x/d7/d4d/tutorial_py_thresholding.html
-    imc = cv2.imread(path)
+    imc = cv.imread(path)
     img = load_grayscale(path)
-    imgb = cv2.GaussianBlur(img , (7, 7), 3)
-    thresh = cv2.bitwise_not(
-                cv2.adaptiveThreshold(imgb,
+    imgb = cv.GaussianBlur(img , (7, 7), 3)
+    thresh = cv.bitwise_not(
+                cv.adaptiveThreshold(imgb,
                                       255,
-                                      cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
-                                      cv2.THRESH_BINARY,
+                                      cv.ADAPTIVE_THRESH_GAUSSIAN_C, 
+                                      cv.THRESH_BINARY,
                                       11,
                                       2)
     )
 
-    contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
     # https://docs.opencv.org/4.x/dc/dcf/tutorial_js_contour_features.html
     # https://stackoverflow.com/questions/62274412/cv2-approxpolydp-cv2-arclength-how-these-works
-    big_contours = sorted(contours, key = cv2.contourArea, reverse = True)[:5]
+    big_contours = sorted(contours, key = cv.contourArea, reverse = True)[:5]
     # loop over the contours
     for c in big_contours:
         # approximate the contour
-        peri = cv2.arcLength(c, True)
-        approx = cv2.approxPolyDP(c, 0.02 * peri, True)
+        peri = cv.arcLength(c, True)
+        approx = cv.approxPolyDP(c, 0.02 * peri, True)
         # look for 4 points in our contour
         if len(approx) == 4:
             board_contours = approx.reshape(4,2)
@@ -67,11 +67,11 @@ def locate_sudoku_image_from(path, inner=True):
 def i2square(img):
     ''' transforms any image to square dimensions '''
     dim = max(img.shape)
-    return cv2.resize(img,(dim,dim),interpolation = cv2.INTER_CUBIC)
+    return cv.resize(img,(dim,dim),interpolation = cv.INTER_CUBIC)
 
 def contrast(grayimg):
-    thresh = cv2.threshold(grayimg, 0, 255,
-		cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+    thresh = cv.threshold(grayimg, 0, 255,
+		cv.THRESH_BINARY_INV | cv.THRESH_OTSU)[1]
     return thresh
 
 def clear_gridlines(gray,black_background=True):
@@ -140,7 +140,7 @@ def get_square(img,r,c,shrink=None,jitter=False):
     a,b = crop.shape
     if a==b:
         return crop
-    return cv2.resize(crop,(min(a,b),min(a,b)))
+    return cv.resize(crop,(min(a,b),min(a,b)))
 
 
 
@@ -170,7 +170,7 @@ def replace_square(img, r,c , value, digits=None):
 
 
     cell_dims = rh-rl,ch-cl
-    img[rl:rh, cl:ch] = cv2.resize(digits[value],cell_dims)
+    img[rl:rh, cl:ch] = cv.resize(digits[value],cell_dims)
     return img
 
 def build_digits_images()-> dict:
@@ -184,7 +184,7 @@ def build_digits_images()-> dict:
             4:(1,5), 5:(1,6), 6:(1,3),
             7:(2,6), 8:(2,5), 9:(1,8), 0:(1,4),
     }
-    return {digit: cv2.resize(
+    return {digit: cv.resize(
                             get_square(g, *keymap_for_train0[digit], shrink=.2),
                             (28,28)
                             ) for digit in range(10)
@@ -194,7 +194,7 @@ DIGIT_IMAGES = build_digits_images()
 
 
 def color2gray(rgb):
-    return cv2.cvtColor(rgb, cv2.COLOR_BGR2GRAY)
+    return cv.cvtColor(rgb, cv.COLOR_BGR2GRAY)
 
 def view28(x):
     ''' utility function to display 12 rows x whatever columns of keras-formatted training data (shape and magnitude)
@@ -345,7 +345,7 @@ def build_data_set(tdict:dict, db:list = [], jitter=False, mypath=False) -> list
             for c in range(9):
                 for i in range(29*jitter+1): #repeat 30x if jitter
                     label = int(label_list[r][c])
-                    s = cv2.resize(get_square(cgray,r,c,shrink=.2,jitter=jitter),(28,28),interpolation = cv2.INTER_CUBIC)
+                    s = cv.resize(get_square(cgray,r,c,shrink=.2,jitter=jitter),(28,28),interpolation = cv.INTER_CUBIC)
                     db.append((s,label))
                     if label == 0 and i>3:
                         break  #no need to repeat blanks too often
@@ -377,7 +377,7 @@ def read_sudoku_array(impath, model=None, display=True):
     p = []
     for i in range(9):
         for j in range(9):
-            s = cv2.resize(get_square(board,i,j,shrink=.2),(28,28),interpolation = cv2.INTER_CUBIC)
+            s = cv.resize(get_square(board,i,j,shrink=.2),(28,28),interpolation = cv.INTER_CUBIC)
             d = s.astype('float')
             d = tf.keras.preprocessing.image.img_to_array(d)
             p.append(d)
