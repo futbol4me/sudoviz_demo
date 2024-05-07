@@ -3,6 +3,7 @@
 
 import itertools
 import numpy as np
+import random
 
 class Board():
     ''' defines a Sudoku board (basically an 81-len np.array of digits, with 0 representing empty)
